@@ -5,23 +5,22 @@ import jakarta.validation.ConstraintValidatorContext;
 import org.aviatrip.representativeservice.validation.annotation.EnumString;
 
 import java.util.Arrays;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 public class EnumStringValidator implements ConstraintValidator<EnumString, String> {
 
-    private Set<String> valueList;
+    private List<String> valueList;
     private String messageTemplate;
 
     @Override
     public void initialize(EnumString constraintAnnotation) {
-        valueList = Arrays.stream(constraintAnnotation.enumClazz()
-                .getEnumConstants())
+        valueList = Arrays.stream(constraintAnnotation.value()
+                        .getEnumConstants())
                 .map(Enum::toString)
-                .collect(Collectors.toSet());
+                .toList();
 
         String propertyName = constraintAnnotation.propertyName();
-        messageTemplate = (!propertyName.isEmpty() ? propertyName + " " : "") + "? doesn't exist";
+        messageTemplate = propertyName + (!propertyName.isEmpty() ? " " : "") + "? doesn't exist";
     }
 
     @Override

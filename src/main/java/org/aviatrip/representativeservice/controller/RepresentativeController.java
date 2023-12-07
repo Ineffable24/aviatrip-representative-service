@@ -1,6 +1,5 @@
 package org.aviatrip.representativeservice.controller;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.aviatrip.representativeservice.dto.request.CompanyRequest;
@@ -17,14 +16,14 @@ import java.util.UUID;
 import static org.aviatrip.representativeservice.enumeration.RepresentativeEventType.VERIFIED;
 
 @RestController
-@RequestMapping("/representative")
+@RequestMapping("/representative/company")
 @RequiredArgsConstructor
 public class RepresentativeController {
 
     private final RepresentativeService representativeService;
     private final RepresentativeEventProducer representativeEventProducer;
 
-    @PostMapping("/company")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public SuccessResponse createCompany(@RequestHeader("subject") UUID userId, @RequestBody @Valid CompanyRequest request) {
         AviaCompany company = representativeService.createCompany(request, userId);
@@ -35,17 +34,5 @@ public class RepresentativeController {
                 .success("Company registered successfully")
                 .details("Token should be reissued to be able to manage your company")
                 .build();
-    }
-
-    @GetMapping
-    public Object assertVerified(@RequestHeader("subject") UUID userId, @RequestHeader("role") final String role) {
-        return new Object() {
-            @JsonProperty("role")
-            private final String roleValue = role;
-
-            public String getRoleValue() {
-                return roleValue;
-            }
-        };
     }
 }

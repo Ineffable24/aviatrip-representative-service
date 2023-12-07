@@ -1,10 +1,7 @@
 package org.aviatrip.representativeservice.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 import java.util.UUID;
@@ -15,6 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = "sections")
 public class Airplane {
 
     @Column(name = "airplane_id")
@@ -29,9 +27,11 @@ public class Airplane {
     private int capacity;
 
     @OneToMany(mappedBy = "airplane", cascade = {CascadeType.REMOVE, CascadeType.PERSIST})
+    @Setter
     private Set<AirplanePassengerSection> sections;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "avia_company_id", nullable = false)
+    @Setter
     private AviaCompany company;
 }

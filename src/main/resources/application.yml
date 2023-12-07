@@ -24,6 +24,8 @@ spring:
 
     properties:
       hibernate:
+        connection:
+          autocommit: false
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
@@ -31,6 +33,9 @@ eureka:
   client:
     service-url:
       defaultZone:
+
+custom:
+  default-page-size: 5
 
 kafka:
   consumer:

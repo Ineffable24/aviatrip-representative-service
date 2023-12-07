@@ -1,10 +1,7 @@
 package org.aviatrip.representativeservice.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.aviatrip.representativeservice.enumeration.FlightSeatClass;
 
 import java.util.UUID;
@@ -15,6 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class AirplanePassengerSection {
 
     @Column(name = "airplane_seat_section_id")
@@ -30,7 +28,7 @@ public class AirplanePassengerSection {
     private int seatCount;
 
     @Column(name = "seat_row_count", nullable = false)
-    private int rowSeatCount;
+    private int seatRowCount;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "airplane_id", nullable = false)

@@ -4,14 +4,12 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
-import lombok.Setter;
 
-@Setter
 @Getter
 public class CompanyRequest {
 
     @NotNull
-    @Pattern(regexp = "[\\w]{2,32}", message = "{messages.company.name}")
+    @Pattern(regexp = "[\\w]{2,32}", message = "{messages.default.name}")
     private String name;
 
     @NotNull

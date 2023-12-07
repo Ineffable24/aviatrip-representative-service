@@ -24,7 +24,7 @@ public class RepresentativeUserEvent {
 
     @JsonProperty("event_type")
     @NotNull
-    @EnumString(enumClazz = RepresentativeUserEventType.class)
+    @EnumString(RepresentativeUserEventType.class)
     private String eventType;
 
     @JsonIgnore

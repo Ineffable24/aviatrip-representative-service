@@ -13,7 +13,7 @@ import java.lang.annotation.*;
 @ReportAsSingleViolation
 @Documented
 public @interface EnumString {
-    Class<? extends Enum<?>> enumClazz();
+    Class<? extends Enum<?>> value();
     String propertyName() default "";
     String message() default "value doesn't exist";
     Class<?>[] groups() default {};

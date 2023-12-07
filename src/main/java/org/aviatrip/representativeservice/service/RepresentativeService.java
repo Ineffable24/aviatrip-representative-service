@@ -1,6 +1,5 @@
 package org.aviatrip.representativeservice.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aviatrip.representativeservice.dto.request.CompanyRequest;
@@ -23,7 +22,6 @@ public class RepresentativeService {
     private final RepresentativeRepository representativeRepository;
     private final CompanyRepository companyRepository;
 
-    @Transactional
     public void createRepresentative(UUID userId) {
         if(representativeRepository.existsById(userId))
             throw new FatalKafkaException("Representative with ID " + userId + " already exists");
@@ -33,14 +31,12 @@ public class RepresentativeService {
                 .build());
     }
 
-    @Transactional
     public void deleteRepresentative(UUID userId) {
         int rowCount = representativeRepository.deleteRepresentativeById(userId);
         if(rowCount == 0)
             throw new FatalKafkaException("Representative with ID " + userId + " not found");
     }
 
-    @Transactional
     public AviaCompany createCompany(CompanyRequest request, UUID userId) {
         if(companyRepository.existsByIdOrNameOrHeadquartersAddress(userId, request.getName(), request.getHeadquartersAddress()))
             throw new BadRequestException(ErrorResponse.builder()

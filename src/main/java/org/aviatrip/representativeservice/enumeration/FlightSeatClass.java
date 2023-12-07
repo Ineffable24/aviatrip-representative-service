@@ -1,6 +1,10 @@
 package org.aviatrip.representativeservice.enumeration;
 
-public enum FlightSeatClass {
+import com.fasterxml.jackson.annotation.JsonValue;
+
+import java.util.NoSuchElementException;
+
+public enum FlightSeatClass implements Formattable{
     ECONOMY("Economy"),
     COMFORT("Comfort"),
     BUSINESS("Business"),
@@ -12,7 +16,17 @@ public enum FlightSeatClass {
         this.name = name;
     }
 
-    public String getName() {
+    @Override
+    @JsonValue
+    public String getFormattedName() {
         return name;
+    }
+
+    public static FlightSeatClass getByFormattedName(String string) {
+        for(var seatClass : FlightSeatClass.values()) {
+            if(seatClass.getFormattedName().equals(string))
+                return seatClass;
+        }
+        throw new NoSuchElementException();
     }
 }
