@@ -7,8 +7,9 @@ import org.aviatrip.representativeservice.validation.annotation.FutureTimeOffset
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.Temporal;
 
-public class FutureTimeOffsetValidator implements ConstraintValidator<FutureTimeOffset, LocalDateTime> {
+public class FutureTimeOffsetValidator implements ConstraintValidator<FutureTimeOffset, Temporal> {
 
     private int hourOffset;
     @Override
@@ -21,7 +22,7 @@ public class FutureTimeOffsetValidator implements ConstraintValidator<FutureTime
         hourOffset = constraintAnnotation.hourOffset();
     }
     @Override
-    public boolean isValid(LocalDateTime date, ConstraintValidatorContext constraintValidatorContext) {
+    public boolean isValid(Temporal date, ConstraintValidatorContext constraintValidatorContext) {
         if(date == null) return true;
 
         long durationInSeconds = ChronoUnit.SECONDS.between(LocalDateTime.now(ZoneId.of("UTC")), date);

@@ -20,5 +20,5 @@ public interface AirplaneRepository extends JpaRepository<Airplane, UUID> {
     Optional<DetailedAirplaneView> findByIdAndCompanyId(UUID id, UUID companyId);
 
     @EntityGraph(attributePaths = "sections")
-    Optional<DetailedAirplaneView> findAirplaneViewByModelAndCompanyId(String model, UUID companyId);
+    <A> Optional<A> findByModelAndCompanyId(String model, UUID companyId, Class<A> type);
 }

@@ -1,15 +1,13 @@
 package org.aviatrip.representativeservice.service.airplanemanagement;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.aviatrip.representativeservice.dto.request.AirplanePassengerSectionRequest;
+import org.aviatrip.representativeservice.dto.request.AirplaneRequest;
 import org.aviatrip.representativeservice.dto.response.AirplaneView;
 import org.aviatrip.representativeservice.dto.response.DetailedAirplaneView;
 import org.aviatrip.representativeservice.dto.response.error.ResourceNotFoundResponse;
 import org.aviatrip.representativeservice.entity.Airplane;
-import org.aviatrip.representativeservice.exception.BadRequestException;
+import org.aviatrip.representativeservice.exception.ResourceNotFoundException;
 import org.aviatrip.representativeservice.repository.AirplaneRepository;
 import org.aviatrip.representativeservice.repository.CompanyRepository;
 import org.springframework.data.domain.Pageable;
@@ -25,37 +23,34 @@ public class AirplaneService {
     private final AirplaneRepository airplaneRepository;
     private final CompanyRepository companyRepository;
 
-    @PersistenceContext
-    EntityManager em;
-
     @Transactional
-    public void createAirplane(Airplane airplane, UUID userId) {
-        airplane.setCompany(companyRepository.getReferenceById(userId));
+    public void createAirplane(Airplane airplane, UUID companyId) {
+        airplane.setCompany(companyRepository.getReferenceById(companyId));
 
         airplaneRepository.save(airplane);
     }
 
-    public int getTotalSeatCount(List<AirplanePassengerSectionRequest> sections) {
+    public int getTotalSeatCount(List<AirplaneRequest.AirplanePassengerSectionRequest> sections) {
         return sections.stream()
-                .mapToInt(AirplanePassengerSectionRequest::getSeatCount)
+                .mapToInt(AirplaneRequest.AirplanePassengerSectionRequest::getSeatCount)
                 .sum();
     }
 
-    public List<AirplaneView> getCompanyAirplanes(UUID userId, Pageable pageRequest) {
-        return airplaneRepository.findAllAirplaneViewsByCompanyId(userId, pageRequest);
+    public List<AirplaneView> getCompanyAirplanes(UUID companyId, Pageable pageRequest) {
+        return airplaneRepository.findAllAirplaneViewsByCompanyId(companyId, pageRequest);
     }
 
-    public DetailedAirplaneView getCompanyAirplaneById(UUID airplaneId, UUID userId) {
-        return airplaneRepository.findByIdAndCompanyId(airplaneId, userId)
+    public DetailedAirplaneView getCompanyAirplaneById(UUID airplaneId, UUID companyId) {
+        return airplaneRepository.findByIdAndCompanyId(airplaneId, companyId)
                 .orElseThrow(() ->
-                        new BadRequestException(new ResourceNotFoundResponse("airplane with ID " + airplaneId))
+                        new ResourceNotFoundException(ResourceNotFoundResponse.of("Airplane with ID " + airplaneId))
                 );
     }
 
-    public DetailedAirplaneView getCompanyAirplaneByModel(String airplaneModel, UUID userId) {
-        return airplaneRepository.findAirplaneViewByModelAndCompanyId(airplaneModel, userId)
+    public <A> A getCompanyAirplaneByModel(String airplaneModel, UUID companyId, Class<A> tClass) {
+        return airplaneRepository.findByModelAndCompanyId(airplaneModel, companyId, tClass)
                 .orElseThrow(() ->
-                        new BadRequestException(new ResourceNotFoundResponse("airplane " + airplaneModel))
+                        new ResourceNotFoundException(ResourceNotFoundResponse.of("Airplane " + airplaneModel))
                 );
     }
 }

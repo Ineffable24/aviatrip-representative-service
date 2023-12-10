@@ -43,12 +43,12 @@ class RepresentativeControllerTest {
                 .sections(
                         List.of(
                                 AirplanePassengerSectionRequestTest.builder()
-                                        .seatClass("First Class")
+                                        .seatClass("First class")
                                         .seatCount(12)
                                         .seatRowCount(3)
                                         .build(),
                                 AirplanePassengerSectionRequestTest.builder()
-                                        .seatClass("EconoMy")
+                                        .seatClass("Economy")
                                         .seatCount(50)
                                         .seatRowCount(5)
                                         .build()

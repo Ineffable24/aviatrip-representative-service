@@ -2,7 +2,12 @@ package org.aviatrip.representativeservice.enumeration;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum City {
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+
+public enum City implements Formattable {
     MOSCOW("Moscow"),
     VLADIVOSTOK("Vladivostok"),
     SAMARA("Samara"),
@@ -15,15 +20,30 @@ public enum City {
     KEMEROVO("Kemerovo"),
     ROSTOV("Rostov");
 
+    private static final Map<String, City> map = new HashMap<>(City.values().length);
+
+    static {
+        for(City city : City.values()) {
+            map.put(city.getFormattedName(), city);
+        }
+    }
+
     private final String cityName;
 
     City(String cityName) {
         this.cityName = cityName;
     }
 
+    @Override
     @JsonValue
-    public String getCityName() {
+    public String getFormattedName() {
         return cityName;
+    }
+
+
+    public static City of(String string) {
+        return Optional.ofNullable(map.get(string))
+                .orElseThrow(() -> new NoSuchElementException("no such city"));
     }
 }
 

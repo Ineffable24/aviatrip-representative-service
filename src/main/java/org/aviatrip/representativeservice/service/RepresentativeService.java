@@ -50,5 +50,9 @@ public class RepresentativeService {
                 .representative(representativeRepository.getReferenceById(userId))
                 .build());
     }
+
+    public AviaCompany getCompanyReference(UUID userId) {
+        return companyRepository.getReferenceById(userId);
+    }
 }
 

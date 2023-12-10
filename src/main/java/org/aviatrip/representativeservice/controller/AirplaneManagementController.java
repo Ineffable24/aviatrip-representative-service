@@ -32,7 +32,7 @@ public class AirplaneManagementController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void createAirplane(@RequestBody @Valid AirplaneRequest request, @RequestHeader("subject") UUID userId) {
+    public void createAirplane(@RequestBody @Valid AirplaneRequest request, @RequestHeader("Subject") UUID userId) {
 
         int totalSeatCount = airplaneService.getTotalSeatCount(request.getSections());
 
@@ -47,16 +47,14 @@ public class AirplaneManagementController {
         Pageable pageRequest = PageRequest.of(pageNumber, defaultPageSize);
 
         return airplaneService.getCompanyAirplanes(userId, pageRequest);
-
-        //return airplaneMapper.mapToViews(airplaneService.getCompanyAirplanes(userId, pageRequest));
     }
 
     @GetMapping("/{id}")
-    public DetailedAirplaneView getCompanyAirplane(@PathVariable String id, @RequestHeader("subject") UUID userId) {
+    public DetailedAirplaneView getCompanyAirplane(@PathVariable String id, @RequestHeader("Subject") UUID userId) {
         try {
             return airplaneService.getCompanyAirplaneById(UUID.fromString(id), userId);
         } catch (IllegalArgumentException ex) {
-            return airplaneService.getCompanyAirplaneByModel(id, userId);
+            return airplaneService.getCompanyAirplaneByModel(id, userId, DetailedAirplaneView.class);
         }
     }
 }

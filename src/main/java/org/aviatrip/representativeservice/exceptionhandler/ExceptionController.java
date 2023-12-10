@@ -7,11 +7,14 @@ import org.aviatrip.representativeservice.dto.response.error.ErrorsResponse;
 import org.aviatrip.representativeservice.dto.response.error.InternalErrorResponse;
 import org.aviatrip.representativeservice.exception.BadRequestException;
 import org.aviatrip.representativeservice.exception.InternalServerErrorException;
+import org.aviatrip.representativeservice.exception.ResourceNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
@@ -51,6 +54,20 @@ public class ExceptionController {
 
         return ResponseEntity.badRequest()
                 .body(response);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException ex) {
+        ErrorResponse response = ex.getErrorResponse().orElse(
+                ErrorResponse.builder()
+                        .errorMessage("resource not found")
+                        .details("please try later")
+                        .build()
+        );
+        log.debug("Returning HTTP 404 Not Found: {}", response);
+
+        return response;
     }
 
     @ExceptionHandler(InternalServerErrorException.class)

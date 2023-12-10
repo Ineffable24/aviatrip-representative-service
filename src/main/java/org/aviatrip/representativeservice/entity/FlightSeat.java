@@ -3,17 +3,18 @@ package org.aviatrip.representativeservice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.aviatrip.representativeservice.enumeration.FlightSeatClass;
+import org.hibernate.annotations.Immutable;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "flight_seats")
+@Immutable
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-@Setter
-@ToString
-@Builder
+@ToString(exclude = "flight")
+@EqualsAndHashCode(exclude = "flight")
 public class FlightSeat {
 
     @Column(name = "flight_seat_id")
@@ -28,7 +29,7 @@ public class FlightSeat {
     private boolean isWindowSeat;
 
     @Column(nullable = false)
-    private int price;
+    private double price;
 
     @Column(name = "class", nullable = false)
     @Enumerated(EnumType.STRING)

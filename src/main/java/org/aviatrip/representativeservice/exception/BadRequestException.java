@@ -6,7 +6,9 @@ import java.util.Optional;
 
 public class BadRequestException extends RuntimeException {
 
-    private final ErrorResponse errorResponse;
+    private ErrorResponse errorResponse;
+
+    public BadRequestException() {}
 
     public BadRequestException(ErrorResponse errorResponse) {
         this.errorResponse = errorResponse;

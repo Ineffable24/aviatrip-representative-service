@@ -4,14 +4,13 @@ import org.aviatrip.representativeservice.dto.response.error.ErrorResponse;
 
 import java.util.Optional;
 
-public class InternalServerErrorException extends RuntimeException {
+public class ResourceNotFoundException extends RuntimeException {
 
     private ErrorResponse errorResponse;
 
-    public InternalServerErrorException() {
-    }
+    public ResourceNotFoundException() {}
 
-    public InternalServerErrorException(ErrorResponse errorResponse) {
+    public ResourceNotFoundException(ErrorResponse errorResponse) {
         this.errorResponse = errorResponse;
     }
 
