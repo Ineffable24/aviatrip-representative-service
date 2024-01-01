@@ -14,13 +14,9 @@ public class FutureTimeOffsetValidator implements ConstraintValidator<FutureTime
     private int hourOffset;
     @Override
     public void initialize(FutureTimeOffset constraintAnnotation) {
-        ConstraintValidator.super.initialize(constraintAnnotation);
-
-        if(constraintAnnotation.hourOffset() < 24)
-            throw new IllegalArgumentException("must be at least 24 hours");
-
         hourOffset = constraintAnnotation.hourOffset();
     }
+
     @Override
     public boolean isValid(Temporal date, ConstraintValidatorContext constraintValidatorContext) {
         if(date == null) return true;

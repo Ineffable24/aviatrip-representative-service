@@ -15,7 +15,7 @@ public class EnumStringValidator implements ConstraintValidator<EnumString, Stri
     @Override
     public void initialize(EnumString constraintAnnotation) {
         valueList = Arrays.stream(constraintAnnotation.value()
-                        .getEnumConstants())
+                .getEnumConstants())
                 .map(Enum::toString)
                 .toList();
 

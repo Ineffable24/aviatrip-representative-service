@@ -16,6 +16,24 @@ spring:
 
   kafka:
     bootstrap-servers:
+    custom:
+      consumer:
+        representative-user:
+          groupId: representative-user-group
+          topic: representative-user
+        flightseat-reservation:
+          groupId: flightseat-reservation-group
+          topic: flightseat-reservation
+      producer:
+        representative-topic: representative
+      retry-topic-prefix: retry-
+      retry-groupId-prefix: retry-
+      dlq-topic-prefix: dlq-
+      fatal-exceptions:
+        - org.aviatrip.representativeservice.exception.FatalKafkaException
+        - org.springframework.kafka.support.serializer.DeserializationException
+        - org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException
+        - jakarta.validation.ConstraintViolationException
 
   jpa:
     show-sql: true
@@ -29,7 +47,7 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
         jdbc:
-          batch_size: 100
+          batch_size: 20
         order_inserts: true
         order_updates: true
 
@@ -38,18 +56,9 @@ eureka:
     service-url:
       defaultZone:
 
+logging:
+  level:
+    org.apache.kafka: ERROR
+
 custom:
   default-page-size: 5
-
-kafka:
-  consumer:
-    representative-user:
-      enabled: true
-      main-groupId: main-representative-user-group
-      main-topic: main-representative-user
-      retry-groupId: retry-representative-user-group
-      retry-topic: retry-representative-user
-      dlq-topic: dlq-representative-user
-  producer:
-    representative:
-      topic: main-representative
