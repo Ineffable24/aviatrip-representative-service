@@ -8,9 +8,10 @@ import org.aviatrip.representativeservice.dto.response.error.InternalErrorRespon
 import org.aviatrip.representativeservice.exception.BadRequestException;
 import org.aviatrip.representativeservice.exception.InternalServerErrorException;
 import org.aviatrip.representativeservice.exception.ResourceNotFoundException;
+import org.aviatrip.representativeservice.util.LoggerMessagePreparer;
+import org.aviatrip.representativeservice.util.StringPrettier;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,14 +23,15 @@ import java.util.Map;
 
 @RestControllerAdvice
 @Slf4j
-public class ExceptionController {
+public class DefaultExceptionController {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorsResponse> handleNotValidMethodArgument(MethodArgumentNotValidException ex) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorsResponse handleNotValidMethodArgument(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
 
         for(FieldError e : ex.getFieldErrors()) {
-            errors.put(e.getField(), e.getDefaultMessage());
+            errors.put(StringPrettier.toSnakeCase(e.getField()), e.getDefaultMessage());
         }
 
         ErrorsResponse errorsResponse = ErrorsResponse.builder()
@@ -37,54 +39,50 @@ public class ExceptionController {
                 .details("invalid field values")
                 .build();
 
-        log.debug("Returning HTTP 400 Bad Request: {}", errorsResponse);
+        log.debug(LoggerMessagePreparer.prepareErrorMessage(ex, HttpStatus.BAD_REQUEST, errorsResponse));
 
-        return ResponseEntity.badRequest().body(errorsResponse);
+        return errorsResponse;
     }
 
     @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException ex) {
-        ErrorResponse response = ex.getErrorResponse().orElse(
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(BadRequestException ex) {
+        log.debug(LoggerMessagePreparer.prepareDetailedErrorMessage(ex, HttpStatus.BAD_REQUEST));
+
+        return ex.getErrorResponse().orElse(
                 ErrorResponse.builder()
                         .errorMessage("bad request")
                         .details("please try later")
                         .build()
         );
-        log.debug("Returning HTTP 400 Bad Request: {}", response);
-
-        return ResponseEntity.badRequest()
-                .body(response);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleResourceNotFoundException(ResourceNotFoundException ex) {
-        ErrorResponse response = ex.getErrorResponse().orElse(
+        log.debug(LoggerMessagePreparer.prepareDetailedErrorMessage(ex, HttpStatus.NOT_FOUND));
+
+        return ex.getErrorResponse().orElse(
                 ErrorResponse.builder()
                         .errorMessage("resource not found")
                         .details("please try later")
                         .build()
         );
-        log.debug("Returning HTTP 404 Not Found: {}", response);
-
-        return response;
     }
 
     @ExceptionHandler(InternalServerErrorException.class)
-    public ResponseEntity<ErrorResponse> handleInternalServerErrorException(InternalServerErrorException ex) {
-        ErrorResponse response = new InternalErrorResponse();
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleInternalServerErrorException(InternalServerErrorException ex) {
+        log.error(LoggerMessagePreparer.prepareDetailedErrorMessage(ex, HttpStatus.INTERNAL_SERVER_ERROR));
 
-        log.error("{} thrown: {}", ex.getClass().getSimpleName(), response);
-
-        return ResponseEntity.internalServerError()
-                .body(response);
+        return InternalErrorResponse.DEFAULT;
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-        log.error("{} thrown: {}", ex.getClass().getSimpleName(), ex.getMostSpecificCause().getMessage());
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
+        log.error(LoggerMessagePreparer.prepareErrorMessage(ex, HttpStatus.INTERNAL_SERVER_ERROR));
 
-        return ResponseEntity.internalServerError()
-                .body(new InternalErrorResponse());
+        return InternalErrorResponse.DEFAULT;
     }
 }

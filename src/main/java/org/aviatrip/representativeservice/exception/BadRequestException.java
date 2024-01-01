@@ -4,11 +4,9 @@ import org.aviatrip.representativeservice.dto.response.error.ErrorResponse;
 
 import java.util.Optional;
 
-public class BadRequestException extends RuntimeException {
+public class BadRequestException extends RuntimeException implements DetailedException {
 
-    private ErrorResponse errorResponse;
-
-    public BadRequestException() {}
+    private final ErrorResponse errorResponse;
 
     public BadRequestException(ErrorResponse errorResponse) {
         this.errorResponse = errorResponse;

@@ -4,7 +4,7 @@ import org.aviatrip.representativeservice.dto.response.error.ErrorResponse;
 
 import java.util.Optional;
 
-public class ResourceNotFoundException extends RuntimeException {
+public class ResourceNotFoundException extends RuntimeException implements DetailedException {
 
     private ErrorResponse errorResponse;
 

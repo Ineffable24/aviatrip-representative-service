@@ -4,9 +4,9 @@ import org.aviatrip.representativeservice.dto.response.error.ErrorResponse;
 
 import java.util.Optional;
 
-public class InternalServerErrorException extends RuntimeException {
+public class InternalServerErrorException extends RuntimeException implements DetailedException {
 
-    private ErrorResponse errorResponse;
+    ErrorResponse errorResponse;
 
     public InternalServerErrorException() {
     }
