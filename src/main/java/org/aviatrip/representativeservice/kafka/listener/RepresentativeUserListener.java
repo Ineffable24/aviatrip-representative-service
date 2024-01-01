@@ -19,29 +19,29 @@ public class RepresentativeUserListener {
 
     private final RepresentativeService representativeService;
 
-    @KafkaListener(topics = "${kafka.consumer.representative-user.main-topic}",
-            groupId = "${kafka.consumer.representative-user.main-groupId}",
-            containerFactory = "mainRepresentativeUserConsumerContainerFactory",
+    @KafkaListener(topics = "${spring.kafka.custom.consumer.representative-user.topic}",
+            groupId = "${spring.kafka.custom.consumer.representative-user.groupId}",
+            containerFactory = "mainListenerContainerFactory",
             properties = "spring.json.value.default.type=org.aviatrip.representativeservice.kafka.event.RepresentativeUserEvent")
-    public void handleMainRepresentativeUserEvent(@Payload @Valid RepresentativeUserEvent event) {
+    public void handleRepresentativeUserEvent(@Payload @Valid RepresentativeUserEvent event) {
 
-        log.debug(">>> Representative creation started: {}", event);
-        handleRepresentativeUserEvent(event);
-        log.debug("<<< Representative created: {}", event);
+        log.debug(">>> Representative creation started: {} <<<", event);
+        dispatchRepresentativeUserEvent(event);
+        log.debug(">>> Representative created: {} <<<", event);
     }
 
-    @KafkaListener(topics = "${kafka.consumer.representative-user.retry-topic}",
-            groupId = "${kafka.consumer.representative-user.retry-groupId}",
-            containerFactory = "retryRepresentativeUserConsumerContainerFactory",
+    @KafkaListener(topics = "#{'${spring.kafka.custom.retry-topic-prefix}' + '${spring.kafka.custom.consumer.representative-user.topic}'}",
+            groupId = "#{'${spring.kafka.custom.retry-groupId-prefix}' + '${spring.kafka.custom.consumer.representative-user.groupId}'}",
+            containerFactory = "retryListenerContainerFactory",
             properties = "spring.json.value.default.type=org.aviatrip.representativeservice.kafka.event.RepresentativeUserEvent")
     public void handleRetryRepresentativeUserEvent(@Payload @Valid RepresentativeUserEvent event) {
 
-        log.debug(">>> RETRY Representative creation started: {}", event);
-        handleRepresentativeUserEvent(event);
-        log.debug(">>> RETRY Representative created: {}", event);
+        log.debug(">>> RETRY Representative creation started: {} <<<", event);
+        dispatchRepresentativeUserEvent(event);
+        log.debug(">>> RETRY Representative created: {} <<<", event);
     }
 
-    public void handleRepresentativeUserEvent(RepresentativeUserEvent event) {
+    public void dispatchRepresentativeUserEvent(RepresentativeUserEvent event) {
         RepresentativeUserEventType type = event.getEventTypeEnum();
         if(RepresentativeUserEventType.CREATED.equals(type))
             representativeService.createRepresentative(event.getUserId());
