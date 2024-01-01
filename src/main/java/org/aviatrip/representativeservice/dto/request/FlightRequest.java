@@ -42,8 +42,6 @@ public class FlightRequest {
     @NotEmpty(message = "must have at least one flight seat class configured")
     private Map<@NotNull @FormattableEnumString(value = FlightSeatClass.class, propertyName = "class") String,
             @Valid FlightPassengerSectionPriceRequest> sections;
-
-
     public City getSource() {
         return City.of(source);
     }
