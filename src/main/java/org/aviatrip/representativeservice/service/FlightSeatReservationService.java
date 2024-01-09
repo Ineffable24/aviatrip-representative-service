@@ -9,6 +9,7 @@ import org.aviatrip.representativeservice.dto.response.error.ErrorResponse;
 import org.aviatrip.representativeservice.dto.response.error.ResourceNotFoundResponse;
 import org.aviatrip.representativeservice.exception.BadRequestException;
 import org.aviatrip.representativeservice.exception.ResourceNotFoundException;
+import org.aviatrip.representativeservice.kafka.event.FlightSeatReservationEvent;
 import org.aviatrip.representativeservice.repository.FlightSeatRepository;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ public class FlightSeatReservationService {
 
     @Transactional
     public void reserveFlightSeat(UUID flightSeatId) {
-        int affectedRowsCount = flightSeatRepository.reserveFlightseatIfNotReserved(flightSeatId);
+        int affectedRowsCount = flightSeatRepository.reserveFlightIfNotReserved(flightSeatId);
 
         if(affectedRowsCount != 1)
             throw new BadRequestException(
@@ -41,6 +42,11 @@ public class FlightSeatReservationService {
                             .details("Flight seat not found or already reserved")
                             .build()
             );
+    }
+    
+    @Transactional
+    public void unreserveFlightSeat(FlightSeatReservationEvent event) {
+        flightSeatRepository.updateFlightSeatIsReserved(event.getFlightSeatId(), false);
     }
 
     public FlightSeatForTicketView getFlightSeatForTicketView(UUID flightSeatId, boolean detailed) {

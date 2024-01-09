@@ -3,13 +3,11 @@ package org.aviatrip.representativeservice.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.aviatrip.representativeservice.enumeration.FlightSeatClass;
-import org.hibernate.annotations.Immutable;
 
 import java.util.UUID;
 
 @Entity
 @Table(name = "flight_seats")
-@Immutable
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

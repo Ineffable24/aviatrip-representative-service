@@ -20,8 +20,12 @@ public interface FlightSeatRepository extends JpaRepository<FlightSeat, UUID> {
     Optional<FlightSeatReservationView> findFlightSeatReservationViewByIdAndIsReserved(UUID id, boolean isReserved);
 
     @Modifying
+    @Query("update FlightSeat s set s.isReserved = :isReserved where s.id = :flightSeatId")
+    int updateFlightSeatIsReserved(UUID flightSeatId, boolean isReserved);
+
+    @Modifying
     @Query("update FlightSeat s set s.isReserved = true where s.id = :flightSeatId and s.isReserved = false")
-    int reserveFlightseatIfNotReserved(UUID flightSeatId);
+    int reserveFlightIfNotReserved(UUID flightSeatId);
 
     <S> Optional<S> findFlightSeatForTicketViewById(UUID id, Class<S> type);
 }
