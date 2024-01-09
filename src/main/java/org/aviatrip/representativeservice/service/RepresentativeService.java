@@ -36,23 +36,5 @@ public class RepresentativeService {
         if(rowCount == 0)
             throw new FatalKafkaException("Representative with ID " + userId + " not found");
     }
-
-    public AviaCompany createCompany(CompanyRequest request, UUID userId) {
-        if(companyRepository.existsByIdOrNameOrHeadquartersAddress(userId, request.getName(), request.getHeadquartersAddress()))
-            throw new BadRequestException(ErrorResponse.builder()
-                    .errorMessage("Some of the fields are not unique")
-                    .details("Try different values")
-                    .build());
-
-        return companyRepository.save(AviaCompany.builder()
-                .name(request.getName())
-                .headquartersAddress(request.getHeadquartersAddress())
-                .representative(representativeRepository.getReferenceById(userId))
-                .build());
-    }
-
-    public AviaCompany getCompanyReference(UUID userId) {
-        return companyRepository.getReferenceById(userId);
-    }
 }
 

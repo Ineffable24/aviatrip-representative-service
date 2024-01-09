@@ -1,4 +1,6 @@
 server:
+  error:
+    include-stacktrace: never
   servlet:
     context-path: /api
 

@@ -7,5 +7,5 @@ import java.util.UUID;
 
 public interface CompanyRepository extends JpaRepository<AviaCompany, UUID> {
 
-    boolean existsByIdOrNameOrHeadquartersAddress(UUID id, String name, String address);
+    boolean existsByNameOrHeadquartersAddress(String name, String address);
 }

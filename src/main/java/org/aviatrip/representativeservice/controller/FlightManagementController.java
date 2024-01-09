@@ -10,6 +10,7 @@ import org.aviatrip.representativeservice.dto.response.FlightView;
 import org.aviatrip.representativeservice.entity.Airplane;
 import org.aviatrip.representativeservice.entity.Flight;
 import org.aviatrip.representativeservice.entity.FlightSeat;
+import org.aviatrip.representativeservice.service.CompanyService;
 import org.aviatrip.representativeservice.service.RepresentativeService;
 import org.aviatrip.representativeservice.service.airplanemanagement.AirplaneService;
 import org.aviatrip.representativeservice.service.flightmanagement.FlightService;
@@ -32,7 +33,7 @@ public class FlightManagementController {
     private final FlightMapper flightMapper;
     private final FlightSeatMapper flightSeatMapper;
     private final AirplaneService airplaneService;
-    private final RepresentativeService representativeService;
+    private final CompanyService companyService;
 
     @Value("${custom.default-page-size}")
     private int defaultPageSize;
@@ -43,7 +44,7 @@ public class FlightManagementController {
 
         flightValidator.validate(request, airplane);
 
-        Flight flight = flightMapper.mapToFlight(request, airplane, representativeService.getCompanyReference(userId));
+        Flight flight = flightMapper.mapToFlight(request, airplane, companyService.getCompanyReference(userId));
         List<FlightSeat> flightSeats = flightSeatMapper.mapToFlightSeats(request.getSections(), flight);
 
         flightService.createFlight(flight, flightSeats);
@@ -58,13 +59,5 @@ public class FlightManagementController {
     @GetMapping("/{flightId}")
     public FlightView getCompanyFlight(@PathVariable UUID flightId, @RequestHeader("Subject") UUID userId) {
         return flightService.getCompanyFlight(flightId, userId);
-    }
-
-    @GetMapping("/{flightId}/seats")
-    public List<FlightSeatView> getCompanyFlightSeats(@RequestParam(value = "page", defaultValue = "0") int pageNumber,
-                            @PathVariable UUID flightId, @RequestHeader("Subject") UUID userId) {
-
-        Pageable pageRequest = PageRequest.of(pageNumber, 20);
-        return flightService.getCompanyFlightSeats(flightId, userId, pageRequest);
     }
 }
