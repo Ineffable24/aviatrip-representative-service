@@ -7,18 +7,18 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Slf4j
-public class RetryDestinationResolver extends AbstractDestinationResolver {
+public class DefaultDestinationResolver extends AbstractDestinationResolver {
 
-    public RetryDestinationResolver(CustomKafkaProps props) {
+    public DefaultDestinationResolver(CustomKafkaProps props) {
         super(props);
     }
 
     @Override
     public TopicPartition apply(ConsumerRecord<?, ?> record, Exception ex) {
         Throwable cause = ex.getCause() == null ? ex : ex.getCause();
-        String dlqTopic = transformRetryToDlq(record.topic());
+        String dlqTopic = transformMainToDlq(record.topic());
 
-        log.error("RETRY Exception [{}] occurred sending the record to the topic [{}]", cause.getClass().getSimpleName(), dlqTopic);
+        log.error("Exception [{}] occurred sending the record to the topic [{}]", cause.getClass().getSimpleName(), dlqTopic);
 
         return new TopicPartition(dlqTopic, -1);
     }

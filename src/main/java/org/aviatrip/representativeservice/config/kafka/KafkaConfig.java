@@ -2,9 +2,7 @@ package org.aviatrip.representativeservice.config.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +21,6 @@ import org.springframework.util.backoff.FixedBackOff;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 @Configuration
 @RequiredArgsConstructor
@@ -31,8 +28,9 @@ public class KafkaConfig {
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServer;
-    private final BiFunction<ConsumerRecord<?,?>, Exception, TopicPartition> mainDestinationResolver;
-    private final BiFunction<ConsumerRecord<?,?>, Exception, TopicPartition> retryDestinationResolver;
+    private final AbstractDestinationResolver mainDestinationResolver;
+    private final AbstractDestinationResolver retryDestinationResolver;
+    private final AbstractDestinationResolver defaultDestinationResolver;
 
     @Bean
     public ConsumerFactory<String, String> defaultConsumerFactory() {
@@ -73,6 +71,23 @@ public class KafkaConfig {
 
         var backOff = new ExponentialBackOff(1000L, 2D);
         backOff.setMaxElapsedTime(2000L);
+        CommonErrorHandler errorHandler = new DefaultErrorHandler(recoverer, backOff);
+        containerFactory.setCommonErrorHandler(errorHandler);
+
+        return containerFactory;
+    }
+
+    @Bean("defaultListenerContainerFactory")
+    public ConcurrentKafkaListenerContainerFactory<String, String> defaultListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, String> containerFactory
+                = new ConcurrentKafkaListenerContainerFactory<>();
+        containerFactory.setConsumerFactory(defaultConsumerFactory());
+
+        var recoverer = new DeadLetterPublishingRecoverer(kafkaTemplate(),
+                defaultDestinationResolver);
+
+        var backOff = new ExponentialBackOff(1000L, 3D);
+        backOff.setMaxElapsedTime(5000L);
         CommonErrorHandler errorHandler = new DefaultErrorHandler(recoverer, backOff);
         containerFactory.setCommonErrorHandler(errorHandler);
 
