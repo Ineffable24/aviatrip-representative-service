@@ -60,5 +60,9 @@ logging:
   level:
     org.apache.kafka: ERROR
 
+springdoc:
+  api-docs:
+    path: /api-docs
+
 custom:
   default-page-size: 5
